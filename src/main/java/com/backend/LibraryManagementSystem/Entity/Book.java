@@ -29,7 +29,9 @@ public class Book {
 
     @ManyToOne
     @JoinColumn
-    @JsonIgnore
+    //@JsonIgnore  //comment for book api uncommit for get api
     Author author;
 }
+
+
 

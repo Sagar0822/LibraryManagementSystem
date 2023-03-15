@@ -3,7 +3,6 @@ package com.backend.LibraryManagementSystem.Service;
 import com.backend.LibraryManagementSystem.Entity.Author;
 import com.backend.LibraryManagementSystem.Entity.Book;
 import com.backend.LibraryManagementSystem.Repository.AuthorRepository;
-import com.backend.LibraryManagementSystem.Repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

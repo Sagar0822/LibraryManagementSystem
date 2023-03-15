@@ -14,6 +14,7 @@ public class AuthorService {
     AuthorRepository authorRepository;
 
     public void addAuthor(Author author){
+
         authorRepository.save(author);
     }
 
@@ -21,3 +22,4 @@ public class AuthorService {
        return authorRepository.findAll();
     }
 }
+
