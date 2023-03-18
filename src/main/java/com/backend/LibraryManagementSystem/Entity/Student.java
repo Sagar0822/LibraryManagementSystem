@@ -20,7 +20,6 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-
     private String name;
 
     private int age;
@@ -28,6 +27,7 @@ public class Student {
     @Enumerated(EnumType.STRING)
     private Department department;
 
+    @Column(unique = true)
     private String email;
 
     @OneToOne(mappedBy = "student",cascade = CascadeType.ALL)

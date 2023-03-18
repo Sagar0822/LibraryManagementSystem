@@ -1,5 +1,6 @@
 package com.backend.LibraryManagementSystem.Service;
 
+import com.backend.LibraryManagementSystem.DTO.StudentRequestDto;
 import com.backend.LibraryManagementSystem.DTO.StudentResponseDto;
 import com.backend.LibraryManagementSystem.DTO.StudentUpdateEmailRequestDto;
 import com.backend.LibraryManagementSystem.Entity.LibraryCard;
@@ -18,17 +19,25 @@ public class StudentService {
     @Autowired
     StudentRepository studentRepository;
 
-    public void addStudent(Student student){
+    public void addStudent(StudentRequestDto studentRequestDto){
 
-        // set the value of card
+        //create a student object
+        Student student = new Student();
+        student.setAge(studentRequestDto.getAge());
+        student.setName(studentRequestDto.getName());
+        student.setEmail(studentRequestDto.getEmail());
+        student.setDepartment(studentRequestDto.getDepartment());
+
+        //create a card object
         LibraryCard card = new LibraryCard();
         card.setStatus(CardStatus.ACTIVATED);
-        card.setValidTill("03/2025");
         card.setStudent(student);
 
-        // set the card attroubte in student
+
+        //set card in student
         student.setCard(card);
 
+        //will save both student and card
         studentRepository.save(student);
     }
     public String findByEmail(String email){
@@ -36,10 +45,6 @@ public class StudentService {
         return student.getName();
     }
 
-//    public Student findStudent(int id){
-//        return studentRepository.findById(id).get();
-//
-//    }
 
     //DTO
     public StudentResponseDto updateEmail(StudentUpdateEmailRequestDto studentUpdateEmailRequestDto){

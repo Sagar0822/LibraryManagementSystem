@@ -21,9 +21,5 @@ public class AuthorService {
     public List<Author> getAuthors(){
        return authorRepository.findAll();
     }
-    public List<Author> getAuthor(){
-
-        return authorRepository.findAll();
-    }
 }
 

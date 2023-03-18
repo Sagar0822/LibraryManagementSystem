@@ -1,5 +1,7 @@
 package com.backend.LibraryManagementSystem.Service;
 
+import com.backend.LibraryManagementSystem.DTO.BookRequestDto;
+import com.backend.LibraryManagementSystem.DTO.BookResponseDto;
 import com.backend.LibraryManagementSystem.Entity.Author;
 import com.backend.LibraryManagementSystem.Entity.Book;
 import com.backend.LibraryManagementSystem.Repository.AuthorRepository;
@@ -14,22 +16,27 @@ public class BookService {
     @Autowired
     AuthorRepository authorRepository;
 
-    public String addBook(Book book) throws Exception{
+    public BookResponseDto addBook(BookRequestDto bookRequestDto) {
 
-        //insert book detail & author id
-        //book object -> author -> id
-        //.get() if Id not find handle by try catch
-        Author author;
-        try{
-            author = authorRepository.findById(book.getAuthor().getId()).get();
-        } catch (Exception e) {
-            return "Book not added";
-        }
+        //get the author object
+        Author author = authorRepository.findById(bookRequestDto.getAuthorId()).get();
 
-        List<Book> bookWritten = author.getBooks();  //already book present
-        bookWritten.add(book); //new book added
+         Book book = new Book();
+         book.setTitle(bookRequestDto.getTitle());
+         book.setGenre(bookRequestDto.getGenre());
+         book.setPrice(bookRequestDto.getPrice());
+         book.setIssued(false);
+         book.setAuthor(author);
 
-        authorRepository.save(author);  //author save b'coz book added in list
-        return "book added";
+         author.getBooks().add(book);
+         authorRepository.save(author);  //will save both author and book
+
+        //create a response else
+        BookResponseDto bookResponseDto = new BookResponseDto();
+
+        bookResponseDto.setTitle(book.getTitle());
+        bookResponseDto.setPrice(book.getPrice());
+
+        return bookResponseDto;
     }
 }

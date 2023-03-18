@@ -25,6 +25,7 @@ public class Author {
     private int age;
 
     private String mobNo;
+
     private String email;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)

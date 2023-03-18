@@ -5,9 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -20,12 +25,22 @@ public class LibraryCard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int cardNo;
 
-    private String validTill;
-
     @Enumerated(EnumType.STRING)
     private CardStatus status;
+
+    @CreationTimestamp  //create an object this time get date & time from your system
+    private Date creationDate;
+
+    @UpdateTimestamp //if you change any update date time
+    private Date updationDate;
 
     @OneToOne
     @JoinColumn
     Student student;
+
+    @OneToMany(mappedBy = "card",cascade = CascadeType.ALL)
+    List<Transaction> transactionList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "card",cascade = CascadeType.ALL)
+    List<Book> booksIssued = new ArrayList<>();
 }
