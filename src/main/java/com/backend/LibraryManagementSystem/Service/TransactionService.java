@@ -10,9 +10,13 @@ import com.backend.LibraryManagementSystem.Enum.TransactionStatus;
 import com.backend.LibraryManagementSystem.Repository.BookRepository;
 import com.backend.LibraryManagementSystem.Repository.CardRepository;
 import com.backend.LibraryManagementSystem.Repository.TransactionRepository;
+import org.apache.catalina.LifecycleState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,6 +31,9 @@ public class TransactionService {
     @Autowired
     TransactionRepository transactionRepository;
 
+    @Autowired
+    private JavaMailSender emailSender;
+
     public IssueBookResponseDto issueBook(IssueBookRequestDto issueBookRequestDto) throws Exception {
 
         //Create Transaction object
@@ -39,8 +46,7 @@ public class TransactionService {
         LibraryCard card;
         try {
             card = cardRepository.findById(issueBookRequestDto.getCardId()).get();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             transaction.setTransactionStatus(TransactionStatus.FAILED);
             transaction.setMessage("Invalid card Id");  //Db throw this message u can see
             transactionRepository.save(transaction);
@@ -48,10 +54,9 @@ public class TransactionService {
         }
 
         Book book;
-        try{
+        try {
             book = bookRepository.findById(issueBookRequestDto.getBookId()).get();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             transaction.setTransactionStatus(TransactionStatus.FAILED);
             transaction.setMessage("Invalid Book Id");
             transactionRepository.save(transaction);
@@ -62,13 +67,13 @@ public class TransactionService {
         transaction.setBook(book);
         transaction.setCard(card);
 
-        if(card.getStatus()!= CardStatus.ACTIVATED){
+        if (card.getStatus() != CardStatus.ACTIVATED) {
             transaction.setTransactionStatus(TransactionStatus.FAILED);
             transaction.setMessage("Your card is not activated");
             transactionRepository.save(transaction);
             throw new Exception("Your card is not activated");
-    }
-        if(book.isIssued()==true){
+        }
+        if (book.isIssued() == true) {
             transaction.setTransactionStatus(TransactionStatus.FAILED);
             transaction.setMessage("Sorry! Book is already issued");
             transactionRepository.save(transaction);
@@ -88,12 +93,33 @@ public class TransactionService {
         cardRepository.save(card); //Book & transaction also save book parrent
 
         //prepare Response Dto
-         IssueBookResponseDto issueBookResponseDto = new IssueBookResponseDto();
+        IssueBookResponseDto issueBookResponseDto = new IssueBookResponseDto();
 
-         issueBookResponseDto.setTransactionId(transaction.getTransactionNumber());
-         issueBookResponseDto.setTransactionStatus(TransactionStatus.SUCCESS);
-         issueBookResponseDto.setBookName(book.getTitle());
+        issueBookResponseDto.setTransactionId(transaction.getTransactionNumber());
+        issueBookResponseDto.setTransactionStatus(TransactionStatus.SUCCESS);
+        issueBookResponseDto.setBookName(book.getTitle());
 
-         return issueBookResponseDto;
+        //send mail to student
+        String text = "Congrats! " + card.getStudent().getName() + " You have been issued " + book.getTitle() + " book. ";
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("backenddeveloper02@gmail.com");
+        message.setTo(card.getStudent().getEmail());
+        message.setSubject("Issue Book Notification");
+        message.setText(text);
+        emailSender.send(message);
+
+        return issueBookResponseDto;
     }
+
+        //custom query
+        public String getAllTrnx(int cardId){
+            List<Transaction> transactionList = transactionRepository.getAllSuccessfullTxnsWithCardNo(cardId);
+            String ans = "";
+            for(Transaction t : transactionList){
+                ans += t.getTransactionNumber();
+                ans += "\n";
+            }
+            return ans;
+        }
 }

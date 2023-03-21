@@ -7,10 +7,7 @@ import com.backend.LibraryManagementSystem.Service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/transaction")
@@ -21,7 +18,7 @@ public class TransactionController {
 
     @PostMapping("/issue")
     public ResponseEntity issueBook(@RequestBody IssueBookRequestDto issueBookRequestDto){
-
+//Return type is issueBookResponseDTO so write responseEntity
         IssueBookResponseDto issueBookResponseDto;
         try{
             issueBookResponseDto = transactionService.issueBook(issueBookRequestDto);
@@ -32,5 +29,8 @@ public class TransactionController {
         return new ResponseEntity(issueBookResponseDto,HttpStatus.ACCEPTED);
     }
 
-    //Return type is issueBookResponseDTO so write responseEntity
+    @GetMapping("/getAllTrnx")
+    public String getAllTrnx(@RequestParam("cardId") int cardId){
+        return transactionService.getAllTrnx(cardId);
+    }
 }
